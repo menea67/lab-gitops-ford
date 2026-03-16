@@ -20,6 +20,7 @@ jobs:
       - name: Leggi il Manifest
         shell: pwsh
         run: |
+          $filePath = Join-Path $env:GITHUB_WORKSPACE "manifest.txt"
         
           if (Test-Path $filePath) {
               Write-Host "File trovato! Contenuto:" -ForegroundColor Green
