@@ -1,24 +1,81 @@
+# 1. LA CONFIGMAP (Il tuo sito HTML)
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: info-portale-ford
+  labels:
+    app: portale-ford-2
 data:
   index.html: |
     <!DOCTYPE html>
     <html lang="it">
     <head>
         <meta charset="UTF-8">
-        <title>Portale Ford 2</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Portale Ford v2</title>
         <style>
-            body { font-family: sans-serif; background-color: #003478; color: white; text-align: center; padding-top: 50px; }
-            .container { border: 2px solid white; display: inline-block; padding: 20px; border-radius: 10px; }
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #003478; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+            .card { background: white; color: #333; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; max-width: 400px; }
+            h1 { color: #003478; margin-bottom: 10px; }
+            .status { color: #28a745; font-weight: bold; }
+            .footer { margin-top: 20px; font-size: 0.8em; color: #777; }
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1>Portale Ford v2</h1>
-            <p>Benvenuto! Questa pagina è servita da un pod Nginx su Kubernetes.</p>
-            <p>Gestito con successo tramite <strong>ArgoCD</strong>.</p>
+        <div class="card">
+            <h1>Portale Ford</h1>
+            <p>Versione 2.0</p>
+            <p class="status">● Sistema Operativo</p>
+            <hr>
+            <p>Questa pagina è servita da un container <strong>Nginx Alpine</strong> configurato via ConfigMap.</p>
+            <div class="footer">Gestito con ArgoCD & Kubernetes</div>
         </div>
     </body>
     </html>
+
+---
+
+# 2. IL DEPLOYMENT (I tuoi container)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portale-ford-deployment-2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: portale-ford-2
+  template:
+    metadata:
+      labels:
+        app: portale-ford-2
+    spec:
+      containers:
+      - name: portale-web-2
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html # Cartella standard di Nginx
+      volumes:
+      - name: html-volume
+        configMap:
+          name: info-portale-ford # Collega la ConfigMap sopra
+
+---
+
+# 3. IL SERVICE (Per accedere alla pagina)
+apiVersion: v1
+kind: Service
+metadata:
+  name: portale-ford-service-2
+spec:
+  selector:
+    app: portale-ford-2
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080 # Porta per vedere il sito (es. localhost:30080)
+  type: NodePort
