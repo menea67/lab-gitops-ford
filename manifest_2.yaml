@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portale-ford-deployment_2
+spec:
+  replicas: 1        # <--- ECCO IL COMANDO PER LE 2 REPLICHE!
+  selector:
+    matchLabels:
+      app: portale-ford_2
+  template:
+    metadata:
+      labels:
+        app: portale-ford_2
+    spec:
+      containers:
+      - name: portale-web_2
+        image: nginx:alpine # Usiamo una versione leggera di Linux/Webserver
+        ports:
+        - containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: info-portale-ford # Qui colleghiamo la tua ConfigMap!
