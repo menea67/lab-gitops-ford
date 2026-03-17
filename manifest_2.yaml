@@ -1,22 +1,24 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: portale-ford-deployment-2
-spec:
-  replicas: 1        # <--- ECCO IL COMANDO PER LE 2 REPLICHE!
-  selector:
-    matchLabels:
-      app: portale-ford-2
-  template:
-    metadata:
-      labels:
-        app: portale-ford-2
-    spec:
-      containers:
-      - name: portale-web-2
-        image: nginx:alpine # Usiamo una versione leggera di Linux/Webserver
-        ports:
-        - containerPort: 80
-        envFrom:
-        - configMapRef:
-            name: info-portale-ford # Qui colleghiamo la tua ConfigMap!
+  name: info-portale-ford
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <title>Portale Ford 2</title>
+        <style>
+            body { font-family: sans-serif; background-color: #003478; color: white; text-align: center; padding-top: 50px; }
+            .container { border: 2px solid white; display: inline-block; padding: 20px; border-radius: 10px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Portale Ford v2</h1>
+            <p>Benvenuto! Questa pagina è servita da un pod Nginx su Kubernetes.</p>
+            <p>Gestito con successo tramite <strong>ArgoCD</strong>.</p>
+        </div>
+    </body>
+    </html>
