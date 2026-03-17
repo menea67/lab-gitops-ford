@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: portale-ford-deployment_2
+  name: portale-ford-deployment-2
 spec:
   replicas: 1        # <--- ECCO IL COMANDO PER LE 2 REPLICHE!
   selector:
     matchLabels:
-      app: portale-ford_2
+      app: portale-ford-2
   template:
     metadata:
       labels:
-        app: portale-ford_2
+        app: portale-ford-2
     spec:
       containers:
-      - name: portale-web_2
+      - name: portale-web-2
         image: nginx:alpine # Usiamo una versione leggera di Linux/Webserver
         ports:
         - containerPort: 80
